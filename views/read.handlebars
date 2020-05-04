@@ -15,10 +15,10 @@
     <div id="add-to-me">
 
     </div>
-    {{#each storyData}}
+    {{#each textArray}}
     <div class="alter flow-text">
       <p>{{ . }}</p>
-      <p class="byLine">written by: {{lookup ../authorData @index}}</p> 
+      <p class="byLine">written by: {{lookup ../authorArray @index}}</p> 
     </div>
     {{/each}}
   </div>

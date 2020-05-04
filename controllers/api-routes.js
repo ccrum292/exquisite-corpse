@@ -2,15 +2,26 @@ var db = require("../models");
 const randomWords = require("random-words");
 module.exports = function (app) {
 
-  // working
-  app.get("/api/entry/:author", function (req, res) {
-    db.Entry.findAll({
-      where: {
-        author: req.params.author
-      },
-    }).then(function (storyData) {
-      res.json(storyData);
-    });
+  // Needs help
+  app.get("/api/stories/:author", function (req, res) {
+    const authorSearch = req.params.author;
+    db.Stories.find({ numberOfEntries: 3, authors: {authorName: authorSearch} }).sort({ dateCreated: -1 }).limit(10)
+      .then(storyData => {
+        res.json(storyData);
+      })
+      .catch(err => {
+        console.log(err);
+        res.json(err);
+      })
+    
+      // old
+    // db.Entry.findAll({
+    //   where: {
+    //     author: req.params.author
+    //   },
+    // }).then(function (storyData) {
+    //   res.json(storyData);
+    // });
   });
 
   // Working
