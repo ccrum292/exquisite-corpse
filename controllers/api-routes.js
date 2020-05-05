@@ -2,66 +2,107 @@ var db = require("../models");
 const randomWords = require("random-words");
 module.exports = function (app) {
 
+  // searches for stories based on author and numberOfEntries
   // Needs help
-  app.get("/api/stories/:author", function (req, res) {
+  app.get("/api/stories/search/:author", function (req, res) {
     const authorSearch = req.params.author;
-    db.Stories.find({ numberOfEntries: 3, authors: {authorName: authorSearch} }).sort({ dateCreated: -1 }).limit(10)
+    db.Stories.find({ $and: [{ numberOfEntries: 3 }, { authors: {authorName: authorSearch }}] }).sort({ dateCreated: -1 }).limit(10)
       .then(storyData => {
-        res.json(storyData);
+        if(!storyData[0]){
+          return res
+            .status(404)
+            .send(`${authorSearch} has no completed stories.`)
+        }
+
+
+        return res.json(storyData);
       })
       .catch(err => {
         console.log(err);
         res.json(err);
       })
-    
-      // old
-    // db.Entry.findAll({
-    //   where: {
-    //     author: req.params.author
-    //   },
-    // }).then(function (storyData) {
-    //   res.json(storyData);
-    // });
   });
 
-  // Working
-  app.get("/api/story/return", function (req, res) {
-    db.Story.findAll({
-      include: [db.Entry]
-    }).then(function (storyData) {
-      res.json(storyData);
-    });
-  });
 
-  // for creating a new story title *Working*
-  app.post("/api/story", function (req, res) {
-    db.Story.create({
-    }).then(function (dbStory) {
-      res.json(dbStory);
-    }).catch(function (err) {
-      res.json(err);
-    });
-  });
-
-  // for creating an entry *Working*
-  app.post("/api/entry", function (req, res) {
-    db.Entry.create(
-      {
-        text: req.body.text,
-        author: req.body.author,
-        StoryId: req.body.StoryId
+  // gets stories for write page
+  // workin
+  app.get("/api/stories/write", (req, res) => {
+    const randomSort = () => {
+      if(Math.floor(Math.random()*10)%2 === 0){
+        return -1;
       }
-      // req.body
-    ).then(function (dbEntry) {
-      console.log(dbEntry, "This is success");
-      res.json(dbEntry);
-    }).catch(function (err) {
-      console.log(err, "This is error");
-      res.json(err);
-    });
+      return 1;
+    }
+    const skipNum = () => Math.floor(Math.random()*10);
+    // use .skip(skipNum()) in future when there are more stories
+    db.Stories.find({ numberOfEntries: {$lt: 3} }).sort({ dateCreated: randomSort() }).limit(20)
+      .then(dbStories => {
+        if(!dbStories[0]){
+          return res
+            .status(404)
+            .send(`No stories in query`)
+        }
+        
+        return res.json(dbStories);
+      })
   });
+
+  // Creates a Story, must be passed an object with authors and text
+  // Workin
+  app.post("/api/stories", (req, res) => {
+    db.Stories.create(req.body)
+      .then(postedStory => {
+        res.json(postedStory);
+      })
+      .catch(err => {
+        console.log(err);
+        res.json(err);
+      });
+  });
+
+
+  // delete a story when given a story ID
+  // Workin
+  app.delete("/api/stories/:id", (req, res) => {
+    db.Stories.findByIdAndDelete(req.params.id)
+      .then(data => {
+        if(!data){
+          return res
+            .status(404)
+            .send(`Story with the id of ${req.params.id} could not be found.`)
+        }
+
+        return res.json(data);
+      })
+      .catch(err => {
+        console.log(err);
+        res.json(err);
+      })
+  });
+
+
+  // Update a story
+  // workin
+  app.put("/api/stories/:id", (req, res) => {
+    db.Stories.findByIdAndUpdate(req.params.id, {$push: {authors: req.body.authorName}, text: req.body.text, numberOfEntries: req.body.numberOfEntries}, {runValidators: true, new: true})
+      .then(updatedStory => {
+        if(!updatedStory){
+          return res
+            .status(404)
+            .send(`Story with _id: ${req.params.id} does not exist`)
+        }
+
+        return res.json(updatedStory);
+      })
+      .catch(err => {
+        console.log(err);
+        res.json(err);
+      })
+  });
+
 
   //for creating a random words object
+  // Workin
   app.get("/api/randomword", function (req, res) {
     res.json(randomWords({exactly:5, wordsPerString:2}));
   });
