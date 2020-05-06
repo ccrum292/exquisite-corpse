@@ -2,19 +2,14 @@ var db = require("../models");
 const randomWords = require("random-words");
 module.exports = function (app) {
 
+
+  // $and: [{ numberOfEntries: 3 }, { authors: {authorName: authorSearch }}]
   // searches for stories based on author and numberOfEntries
   // Needs help
   app.get("/api/stories/search/:author", function (req, res) {
     const authorSearch = req.params.author;
-    db.Stories.find({ $and: [{ numberOfEntries: 3 }, { authors: {authorName: authorSearch }}] }).sort({ dateCreated: -1 }).limit(10)
+    db.Stories.find({ numberOfEntries: 3, authors: {authorName: authorSearch } }).sort({ dateCreated: -1 }).limit(10)
       .then(storyData => {
-        if(!storyData[0]){
-          return res
-            .status(404)
-            .send(`${authorSearch} has no completed stories.`)
-        }
-
-
         return res.json(storyData);
       })
       .catch(err => {

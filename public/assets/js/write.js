@@ -50,7 +50,6 @@ const displaySentencesTorso = () => {
   }
 }
 
-
 let legsCounter = 0;
 const displaySentencesLegs = () => {
   if(!arrayOfStoiesWithTwoEntries[0]){
@@ -127,40 +126,30 @@ $("#continueSubmitL").on("click", function (event) {
 });
 
 
-
 //Random words boxes
-$("#wordRandomizer1").on("click", () => {
-  $("#randomContainer1").removeClass("hide");
-  $("#randomWordsList1").empty();
+const randomizer = (container, list) => {
+  $(container).removeClass("hide");
+  $(list).empty();
   $.get("/api/randomword").then(rWords => {
     rWords.forEach(function (word) {
-      // console.log("WORD:", word);
-      $("#randomWordsList1").append($("<li>").text(word));
+      $(list).append($("<li>").text(word));
     });
   });
+};
 
+$("#wordRandomizer1").on("click", event => {
+  event.preventDefault();
+  randomizer("#randomContainer1", "#randomWordsList1");
 });
 
-$("#wordRandomizer2").on("click", () => {
-  $("#randomContainer2").removeClass("hide");
-  $("#randomWordsList2").empty();
-  $.get("/api/randomword").then(rWords => {
-    rWords.forEach(function (word) {
-      // console.log("WORD:", word);
-      $("#randomWordsList2").append($("<li>").text(word));
-    });
-  });
+$("#wordRandomizer2").on("click", event => {
+  event.preventDefault();
+  randomizer("#randomContainer2", "#randomWordsList2");
 });
 
-$("#wordRandomizer3").on("click", () => {
-  $("#randomContainer3").removeClass("hide");
-  $("#randomWordsList3").empty();
-  $.get("/api/randomword").then(rWords => {
-    rWords.forEach(function (word) {
-      // console.log("WORD:", word);
-      $("#randomWordsList3").append($("<li>").text(word));
-    });
-  });
+$("#wordRandomizer3").on("click", event => {
+  event.preventDefault();
+  randomizer("#randomContainer3", "#randomWordsList3");
 });
 
 // anime.js
