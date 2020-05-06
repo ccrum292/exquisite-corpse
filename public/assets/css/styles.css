@@ -103,7 +103,8 @@ body {
 }
 
 .wordRandomizer,
-#nextBtn {
+#nextBtn1,
+#nextBtn2 {
   float: right !important;
 }
 

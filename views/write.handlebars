@@ -1,34 +1,7 @@
 <div class="row wrap">
-  <div class="col xl4 l3 m6 s12 flowtext">
-    <div class="mainGreen">      
-      <h2>continue a story...</h2>      
-    </div>
-    <div id="randomContainer1" class="mainYellow center hide">      
-      <ul id="randomWordsList1"></ul>     
-    </div>
-  </div>
-  <div class="col s12 m10 l8 xl8 flowtext">    
-    <div class="mainRed card-panel">
-      <button id="nextBtn" class="btn-flat waves-effect waves-yellow"><span id="btnText">skip!</span></button>      
-      <p id="lastEntry" data-id={{idOfLastSentence.0.storyId}}>{{lastSentence.0.text}}</p>
-      <div class="input-field">
-        <textarea id="entry" class="materialize-textarea" data-length="500"></textarea>
-        <label for="entry">what happened next?</label>
-      </div>
-      <div class="input-field">
-        <textarea id="entryAuthor" class="materialize-textarea" data-length="20"></textarea>
-        <label id="x" for="entryAuthor">your pen name</label>
-      </div>
-      <button id="continueSubmit" class="btn-flat waves-effect waves-red" type="submit"><span
-          id="btnText">save!</span></button>
-      <button id="wordRandomizer1" class="btn-flat waves-effect waves-yellow wordRandomizer"><span id="btnText">give me ideas!</span></button>
-    </div>  
-  </div>
-</div>
-<div class="row wrap">
   <div class="col s12 m6 xl4 l3 flowtext">
     <div class="mainRed">      
-      <h2>...or create a story!</h2>      
+      <h2>head</h2>      
     </div>
     <div id="randomContainer2" class="mainYellow center hide">     
       <ul id="randomWordsList2"></ul>
@@ -44,10 +17,66 @@
         <textarea id="storyAuthor" class="materialize-textarea" data-length="20"></textarea>
         <label for="storyAuthor">your pen name</label>
       </div>
-      <button id="createSubmit" data-id={{idOfLastStory.0.id}} class="btn-flat waves-effect waves-red"
+      <button id="createSubmit" class="btn-flat waves-effect waves-red"
         type="submit"><span id="btnText">save!</span></button>
       <button id="wordRandomizer2" class="btn-flat waves-effect waves-yellow wordRandomizer"><span id="btnText">give me ideas!</span></button>
     </div>
+  </div>
+</div>
+
+<div class="row wrap">
+  <div class="col xl4 l3 m6 s12 flowtext">
+    <div class="mainGreen">      
+      <h2>torso</h2>      
+    </div>
+    <div id="randomContainer1" class="mainYellow center hide">      
+      <ul id="randomWordsList1"></ul>     
+    </div>
+  </div>
+  <div class="col s12 m10 l8 xl8 flowtext">    
+    <div class="mainRed card-panel">
+      <button id="nextBtn1" class="btn-flat waves-effect waves-yellow"><span id="btnText">skip!</span></button>      
+      <p id="lastEntryT" data-id=""></p>
+      <div class="input-field">
+        <textarea id="entryT" class="materialize-textarea" data-length="500"></textarea>
+        <label for="entryT">what happened next?</label>
+      </div>
+      <div class="input-field">
+        <textarea id="entryAuthorT" class="materialize-textarea" data-length="20"></textarea>
+        <label id="x" for="entryAuthorT">your pen name</label>
+      </div>
+      <button id="continueSubmitT" class="btn-flat waves-effect waves-red" type="submit"><span
+          id="btnText">save!</span></button>
+      <button id="wordRandomizer1" class="btn-flat waves-effect waves-yellow wordRandomizer"><span id="btnText">give me ideas!</span></button>
+    </div>  
+  </div>
+</div>
+
+<div class="row wrap">
+  <div class="col xl4 l3 m6 s12 flowtext">
+    <div class="mainGreen">      
+      <h2>legs</h2>      
+    </div>
+    <div id="randomContainer3" class="mainYellow center hide">      
+      <ul id="randomWordsList3"></ul>     
+    </div>
+  </div>
+  <div class="col s12 m10 l8 xl8 flowtext">    
+    <div class="mainRed card-panel">
+      <button id="nextBtn2" class="btn-flat waves-effect waves-yellow"><span id="btnText">skip!</span></button>      
+      <p id="lastEntryL" data-id=""></p>
+      <div class="input-field">
+        <textarea id="entryL" class="materialize-textarea" data-length="500"></textarea>
+        <label for="entryL">what happened next?</label>
+      </div>
+      <div class="input-field">
+        <textarea id="entryAuthorL" class="materialize-textarea" data-length="20"></textarea>
+        <label id="x" for="entryAuthorL">your pen name</label>
+      </div>
+      <button id="continueSubmitL" class="btn-flat waves-effect waves-red" type="submit"><span
+          id="btnText">save!</span></button>
+      <button id="wordRandomizer3" class="btn-flat waves-effect waves-yellow wordRandomizer"><span id="btnText">give me ideas!</span></button>
+    </div>  
   </div>
 </div>
 <script src="assets/js/write.js"></script>
