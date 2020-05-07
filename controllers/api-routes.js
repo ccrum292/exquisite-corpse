@@ -8,7 +8,8 @@ module.exports = function (app) {
   // Needs help
   app.get("/api/stories/search/:author", function (req, res) {
     const authorSearch = req.params.author;
-    db.Stories.find({ numberOfEntries: 3, authors: {authorName: authorSearch } }).sort({ dateCreated: -1 }).limit(10)
+    console.log(authorSearch)
+    db.Stories.find({ numberOfEntries: 3, "authors.authorName": authorSearch  }).sort({ dateCreated: -1 }).limit(10)
       .then(storyData => {
         return res.json(storyData);
       })
@@ -30,7 +31,7 @@ module.exports = function (app) {
     }
     const skipNum = () => Math.floor(Math.random()*10);
     // use .skip(skipNum()) in future when there are more stories
-    db.Stories.find({ numberOfEntries: {$lt: 3} }).sort({ dateCreated: randomSort() }).limit(20)
+    db.Stories.find({ numberOfEntries: {$lt: 3} }).sort({ dateCreated: randomSort() }).limit(40)
       .then(dbStories => {
         if(!dbStories[0]){
           return res
