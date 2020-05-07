@@ -1,135 +1,158 @@
-var lastSentence = [];
-var idOfLastSentence = [];
-
-function getStory() {
-  $.ajax("/api/story", {
-    type: "POST"
-  });
-}
-
-function getEntry(text, author, storyId) {
-  $.ajax("/api/entry", {
-    type: "POST",
-    data: { text: text.val(), author: author.val(), StoryId: storyId.data("id") }
-  }).then(function () {
-    location.reload();
-  });
-}
+let arrayOfStoiesWithOneEntry;
+let arrayOfStoiesWithTwoEntries;
 
 $(document).ready(function () {
   $("textarea#story").characterCounter();
   $("textarea#entry").characterCounter();
-  $.get("/api/story/return", function (entryData) {
-    entryData.forEach(function(val){
-      if(lastSentence.length<10){
-        if(val.Entries.length<3){
-          var allText;
-          var last = {};
-          var storyId = {};
-          var splitText;
-          if(val.Entries.length>1){
-            allText = val.Entries[val.Entries.length-1].text;
-            splitText = allText.match(/\(?[^\.\?\!]+[\.!\?]\)?/g);
-            if(splitText.length>1){
-              last.text = splitText[splitText.length - 1];
-            }else{
-              last.text = splitText[0];
-            }
-            storyId.storyId = val.Entries[val.Entries.length-1].StoryId;
-            lastSentence.push(last);
-            idOfLastSentence.push(storyId);
-          }else if(val.Entries.length === 1){
-            allText= val.Entries[0].text;
-            splitText = allText.match(/\(?[^\.\?\!]+[\.!\?]\)?/g);
-            if(splitText === null){
-              last.text = allText;
-            }else{
-              if(splitText.length>1){
-                last.text = splitText[splitText.length - 1];
-              }else{
-                last.text = splitText[0];
-              }
-            }
-            storyId.storyId = val.Entries[0].StoryId;
-            lastSentence.push(last);
-            idOfLastSentence.push(storyId);
-          }
-        }
+
+  $.get("/api/stories/write", stories => {
+    arrayOfStoiesWithOneEntry = stories.filter(story => {
+      if(story.numberOfEntries === 1){
+        return story
       }
     });
+    arrayOfStoiesWithTwoEntries = stories.filter(story => {
+      if(story.numberOfEntries === 2){
+        return story
+      }
+    });
+    displaySentencesTorso();
+    displaySentencesLegs();
   });
 });
 
-var counter = 1;
-$("#nextBtn").on("click", function (event) {
-  event.preventDefault();
-  console.log(counter);
-  console.log(lastSentence.length);
-  if (counter < 10) {
-    var displaySentence = lastSentence[counter].text;
-    var displayId = idOfLastSentence[counter].storyId;
-    $("#lastEntry").html(displaySentence);
-    $("#lastEntry").attr("data-id", displayId);
-    counter++;
-    console.log(counter);
-  }
-  if(counter === lastSentence.length){
-    counter = 0;
-  }
-});
 
+// these three functions make the skip button work
+const matchFunction = (longString) => {
+  if(!longString){
+    return `There are no stories to display`;
+  }
+  const splitText = longString.match(/\(?[^\.\?\!]+[\.!\?]\)?/g);
+  if(splitText.length>1){
+    return splitText[splitText.length - 1];
+  }
+  return splitText[0];
+}
+
+let torsoCounter = 0;
+const displaySentencesTorso = () => {
+  if(!arrayOfStoiesWithOneEntry[0]){
+    return $("#lastEntryT").html('There are Currently no "torso" story sections to continue.  Please create a head above or legs below.');
+  }
+  const displaySentence = matchFunction(arrayOfStoiesWithOneEntry[torsoCounter].text);
+  const displayId = arrayOfStoiesWithOneEntry[torsoCounter]._id;
+  $("#lastEntryT").html(displaySentence);
+  $("#lastEntryT").attr("data-id", displayId);
+  if (torsoCounter < arrayOfStoiesWithOneEntry.length-1) {
+    torsoCounter++;
+  }else{
+    torsoCounter = 0;
+  }
+}
+
+let legsCounter = 0;
+const displaySentencesLegs = () => {
+  if(!arrayOfStoiesWithTwoEntries[0]){
+    return $("#lastEntryL").html('There are Currently no "legs" story sections to continue.  Please create a head or torso above.');
+  }
+  const displaySentence = matchFunction(arrayOfStoiesWithTwoEntries[legsCounter].text);
+  const displayId = arrayOfStoiesWithTwoEntries[legsCounter]._id;
+  $("#lastEntryL").html(displaySentence);
+  $("#lastEntryL").attr("data-id", displayId);
+  if (legsCounter < arrayOfStoiesWithTwoEntries.length-1) {
+    legsCounter++;
+  }else{
+    legsCounter = 0;
+  }
+}
+
+$("#nextBtn1").on("click", displaySentencesTorso);
+$("#nextBtn2").on("click", displaySentencesLegs);
+
+
+// onClick for making a new story
 $("#createSubmit").on("click", function (event) {
   event.preventDefault();
-  if($("#story").val() && $("#story").val().match(/\(?[^\.\?\!]+[\.!\?]\)?/g)){
-    console.log("something");
-    getStory();
-    getEntry($("#story"), $("#storyAuthor"), $("#createSubmit"));
+  if($("#story").val() && $("#storyAuthor").val() && $("#story").val().match(/\(?[^\.\?\!]+[\.!\?]\)?/g)){
+    postStory($("#story").val(), $("#storyAuthor").val());
   }
 });
 
-$("#continueSubmit").on("click", function (event) {
+// Creates the initial story (the head)
+// workin
+const postStory = (text, author) => {
+  $.ajax("/api/stories", {
+    type: "POST",
+    data: { authors: [{ authorName: author}], text: text }
+  }).then(() => {
+    location.reload();
+  })
+}
+
+
+// onClick for updating story
+const updateStory = (id, author, updatedText, numberOfEntries) => {
+  $.ajax("/api/stories/" + id, {
+    type: "PUT",
+    data: { authorName: { authorName: author }, text: updatedText, numberOfEntries: numberOfEntries }
+  }).then(() => {
+    location.reload();
+  })
+};
+
+$("#continueSubmitT").on("click", function (event) {
   event.preventDefault();
-  if($("#entry").val().match(/\(?[^\.\?\!]+[\.!\?]\)?/g)){
-    getEntry($("#entry"), $("#entryAuthor"), $("#lastEntry"));
-  }else{
-    // console.log("else");
-  }
+  const oldText = arrayOfStoiesWithOneEntry.filter(storydata => {
+    if(storydata._id === $("#lastEntryT").data("id")){
+      return storydata;
+    }
+  })
+  if($("#entryT").val() && $("#entryAuthorT").val() && $("#entryT").val().match(/\(?[^\.\?\!]+[\.!\?]\)?/g) && !($("#lastEntryT").data("id") === "")){
+    updateStory($("#lastEntryT").data("id"), $("#entryAuthorT").val(), oldText[0].text + " " + $("#entryT").val(), 2)
+  };
+});
+
+$("#continueSubmitL").on("click", function (event) {
+  event.preventDefault();
+  const oldText = arrayOfStoiesWithTwoEntries.filter(storydata => {
+    if(storydata._id === $("#lastEntryL").data("id")){
+      return storydata;
+    }
+  })
+  console.log($("#entryL").val() && $("#entryAuthorL").val() && $("#entryL").val().match(/\(?[^\.\?\!]+[\.!\?]\)?/g) && !($("#lastEntryL").data("id") === ""))
+  if($("#entryL").val() && $("#entryAuthorL").val() && $("#entryL").val().match(/\(?[^\.\?\!]+[\.!\?]\)?/g) && !($("#lastEntryL").data("id") === "")){
+    updateStory($("#lastEntryL").data("id"), $("#entryAuthorL").val(), oldText[0].text + " " + $("#entryL").val(), 3)
+  };
 });
 
 
 //Random words boxes
-$("#wordRandomizer1").on("click", () => {
-  $("#randomContainer1").removeClass("hide");
-  $("#randomWordsList1").empty();
+const randomizer = (container, list) => {
+  $(container).removeClass("hide");
+  $(list).empty();
   $.get("/api/randomword").then(rWords => {
     rWords.forEach(function (word) {
-      // console.log("WORD:", word);
-      $("#randomWordsList1").append($("<li>").text(word));
+      $(list).append($("<li>").text(word));
     });
   });
+};
 
-});
-$("#wordRandomizer2").on("click", () => {
-  $("#randomContainer2").removeClass("hide");
-  $("#randomWordsList2").empty();
-  $.get("/api/randomword").then(rWords => {
-    rWords.forEach(function (word) {
-      // console.log("WORD:", word);
-      $("#randomWordsList2").append($("<li>").text(word));
-    });
-  });
+$("#wordRandomizer1").on("click", event => {
+  event.preventDefault();
+  randomizer("#randomContainer1", "#randomWordsList1");
 });
 
-if ($("#createSubmit").data("id") === 0) {
-  getStory();
-  $.ajax("/api/entry", {
-    type: "POST",
-    data: {text: "I really hope this demo works. I would be heartbroken if it did not.", author: "Murc", StoryId: 1}
-  }).then(function() {
-    location.reload();
-  });
-}
+$("#wordRandomizer2").on("click", event => {
+  event.preventDefault();
+  randomizer("#randomContainer2", "#randomWordsList2");
+});
 
+$("#wordRandomizer3").on("click", event => {
+  event.preventDefault();
+  randomizer("#randomContainer3", "#randomWordsList3");
+});
+
+// anime.js
 anime({
   targets: ".wordRandomizer",
   keyframes: [
