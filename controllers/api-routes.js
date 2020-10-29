@@ -1,3 +1,4 @@
+// Now using MongoDB Atlas
 var db = require("../models");
 const randomWords = require("random-words");
 module.exports = function (app) {
